@@ -4,9 +4,7 @@
 
 ```bash
 
-export GITHUB_TOKEN="api token from github"
-
-docker build -t chadgrant/terraform --build-arg github_token=$GITHUB_TOKEN .
+make docker-build
 ```
 
 ## Terraform Conventions
