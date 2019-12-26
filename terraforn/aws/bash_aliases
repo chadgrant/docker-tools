@@ -1,0 +1,96 @@
+# usage awsprofile <profilename>
+function awsprofile() {
+    unset AWS_SESSION_TOKEN AWS_PROFILE AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_DEFAULT_REGION
+    AWS_PROFILE=$1
+
+    if [ "x$AWS_PROFILE" = "x" ]; then
+        read -p "Enter AWS Profile:" AWS_PROFILE
+        if [ "x$AWS_PROFILE" = "x" ]; then
+            echo "No profile passed"
+            echo "usage awsprofile <profile>"
+            return 1
+        fi
+    fi
+
+    AWS_ACCESS_KEY_ID=$(aws configure get aws_access_key_id --profile ${AWS_PROFILE})
+    AWS_SECRET_ACCESS_KEY=$(aws configure get aws_secret_access_key --profile ${AWS_PROFILE})
+    AWS_DEFAULT_REGION=$(aws configure get region --profile ${AWS_PROFILE})
+    export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_DEFAULT_REGION AWS_PROFILE
+
+    echo "AWS profile [$AWS_PROFILE] configured."
+}
+
+# usage awsmfa profile username 12345
+function awsmfa() {
+
+    AWS_PROFILE=${1:-$AWS_DEFAULT_PROFILE}
+    AWS_USER=${2:-$AWS_DEFAULT_USER}
+    MFA_CODE=$3
+
+    if [ "x$AWS_PROFILE" = "x" ]; then
+        read -p "Enter AWS Profile:" AWS_PROFILE
+        if [ "x$AWS_PROFILE" = "x" ]; then
+            echo "No profile passed"
+            mfausage
+            return 1
+        fi
+    fi
+
+    if [ "x$AWS_USER" = "x" ]; then
+        read -p "Enter AWS Username:" AWS_USER
+        if [ "x$AWS_USER" = "x" ]; then
+            echo "No aws user passed"
+            mfausage
+            return 2
+        fi
+    fi
+
+    if [ "x$MFA_CODE" = "x" ]; then
+        read -p "Enter MFA Code [${AWS_PROFILE}:${AWS_USER}]:" MFA_CODE
+        if [ "x$MFA_CODE" = "x" ]; then
+            echo "No MFA code passed"
+            mfausage
+            return 3
+        fi
+    fi
+
+    awsprofile $AWS_PROFILE
+
+    AWS_ACCOUNT_ID=$(aws sts get-caller-identity | jq -r .Account)
+    MFA_ARN="arn:aws:iam::${AWS_ACCOUNT_ID}:mfa/${AWS_USER}"
+
+    TOKEN=$(aws sts get-session-token --serial-number ${MFA_ARN} --duration-seconds 129600 --token-code ${MFA_CODE})
+
+    AWS_ACCESS_KEY_ID=$(echo ${TOKEN} | jq -r .Credentials.AccessKeyId)
+    AWS_SECRET_ACCESS_KEY=$(echo ${TOKEN} | jq -r .Credentials.SecretAccessKey)
+    AWS_SESSION_TOKEN=$(echo ${TOKEN} | jq -r .Credentials.SessionToken)
+
+    export AWS_PROFILE AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
+
+    echo "AWS Session token obtained for [$AWS_PROFILE] $AWS_USER."
+}
+
+function mfausage() {
+    echo "usage awsmfa profile username 12345"
+}
+
+function docker-terraform() {
+
+    if [ "x$AWS_SESSION_TOKEN" = "x" ]; then
+        echo "no aws session token, run awsmfa first"
+        return 1
+    fi
+
+    STUDIO=$(cd .. && basename $PWD)
+
+    docker run -it --rm \
+        -v $(cd .. && pwd):/terraform/$STUDIO/ -w /terraform/$STUDIO/$(basename $PWD) \
+        -e STATE_STORE=AWS -e SECRET_STORE=AWS -e FILE_STORE=AWS \
+        -e ENVIRONMENT=$AWS_PROFILE \
+        -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+        -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+        -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION \
+        -e AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN \
+        -e PS1='🐳 \[\033[1;36m\]\w \[\033[1;91m\](${ENVIRONMENT})\[\033[0;35m\] \[\033[1;36m\]# \[\033[0m\]' \
+        playstudios/terraform
+}

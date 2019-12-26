@@ -1,6 +1,6 @@
-DHALL_VERSION?=1.28.0
-DHALL_JSON_VERSION?=1.6.0
-TAG?=chadgrant/dhall
+TERRAFORM_VERSION?=0.11.11
+GO_VERSION?=1.13.5
+TAG?=chadgrant/terraform
 
 .PHONY: help
 
@@ -11,18 +11,17 @@ help: ## This help.
 .EXPORT_ALL_VARIABLES:
 
 docker-build:
-	docker build -t ${TAG}:${DHALL_VERSION} \
-	--build-arg DHALL_VERSION=${DHALL_VERSION} \
-	--build-arg DHALL_JSON_VERSION=${DHALL_JSON_VERSION} .
+	docker build -t ${TAG}:${TERRAFORM_VERSION} \
+	--build-arg GO_VERSION=${GO_VERSION} \
+	--build-arg TERRAFORM_VERSION=${TERRAFORM_VERSION} .
 
 docker-push:
-	docker push ${TAG}:${DHALL_VERSION}
+	docker push ${TAG}:${TERRAFORM_VERSION}
 
 docker-run:
-	docker run --rm -it \
-		--workdir /work \
-		-v $(shell pwd):/work \
-		${TAG}:${DHALL_VERSION} --help
+	docker run -it \
+		-v $(shell pwd)/terraform/:/terraform \
+		${TAG}:${TERRAFORM_VERSION}
 
 docker-stop:
 	-docker container stop `docker container ls -q --filter ancestor=${TAG}`

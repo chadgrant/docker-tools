@@ -1,0 +1,5 @@
+#!/bin/sh
+
+if [ "$FILE_STORE" = "AWS" ]; then
+    aws-get-file $1 $2
+fi

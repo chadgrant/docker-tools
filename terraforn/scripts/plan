@@ -1,0 +1,33 @@
+#!/bin/sh
+
+backend-config
+
+args=""
+
+if [ -f ../../terraform.tfvars ]; then
+  args="$args -var-file=../../terraform.tfvars"
+fi
+
+if [ -f ../terraform.tfvars ]; then
+  args="$args -var-file=../terraform.tfvars"
+fi
+
+if [ -f terraform.tfvars ]; then
+  args="$args -var-file=terraform.tfvars"
+fi
+
+if [ -f ../../${ENVIRONMENT}.tfvars ]; then
+  args="$args -var-file=../../${ENVIRONMENT}.tfvars"
+fi
+
+if [ -f ../${ENVIRONMENT}.tfvars ]; then
+  args="$args -var-file=../${ENVIRONMENT}.tfvars"
+fi
+
+if [ -f ${ENVIRONMENT}.tfvars ]; then
+  args="$args -var-file=${ENVIRONMENT}.tfvars"
+fi
+
+echo "[exec]: terraform plan $args"
+
+terraform plan $args

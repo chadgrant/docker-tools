@@ -1,0 +1,3 @@
+#!/bin/sh
+
+aws s3 cp $1 s3://${TERRAFORM_BUCKET}/$(basename $PWD)/$2 --sse-kms-key-id ${TERRAFORM_KMS_KEY} --sse aws:kms

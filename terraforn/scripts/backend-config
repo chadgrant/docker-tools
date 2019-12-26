@@ -1,0 +1,5 @@
+#!/bin/sh
+
+if [ "$STATE_STORE" = "AWS" ]; then
+    aws-backend-config
+fi

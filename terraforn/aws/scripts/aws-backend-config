@@ -1,0 +1,21 @@
+#!/bin/sh
+
+eval $(tfvars | while read line; do echo "export $line"; done)
+
+#remove remote state config if it's for a different environment
+if [ -f ./.terraform/terraform.tfstate ]; then
+    if grep -q "${TERRAFORM_BUCKET}" ./.terraform/terraform.tfstate ; then
+        return
+    else
+        rm ./.terraform/terraform.tfstate
+    fi
+fi
+
+if [ ! -e ./.terraform/terraform.tfstate ]; then
+    terraform init \
+        -backend-config="region=${AWS_REGION}" \
+        -backend-config="bucket=${TERRAFORM_BUCKET}" \
+        -backend-config="key=$(basename $PWD)/${ENVIRONMENT}.tfstate" \
+        -backend-config="kms_key_id=${TERRAFORM_KMS_KEY}" \
+        -backend-config="dynamodb_table=${TERRAFORM_LOCK_TABLE}"
+fi

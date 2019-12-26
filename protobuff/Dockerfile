@@ -1,5 +1,4 @@
-FROM golang:1.14-rc-buster
-MAINTAINER chad.grant@me.com
+FROM golang:1.13.5-buster
 ARG PROTOBUFF_VERSION="3.6.1"
 
 RUN	go get \

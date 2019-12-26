@@ -1,0 +1,5 @@
+#!/bin/sh
+
+if [ "$FILE_STORE" = "AWS" ]; then
+    aws-put-file $1 $2
+fi
