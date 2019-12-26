@@ -1,4 +1,5 @@
 PROTOBUFF_VERSION?=3.6.1
+RUNTIME_IMG?=golang:1.13.5-buster
 TAG?=chadgrant/protobuff
 
 .PHONY: help
@@ -10,7 +11,9 @@ help: ## This help.
 .EXPORT_ALL_VARIABLES:
 
 docker-build:
-	docker build -t ${TAG}:${PROTOBUFF_VERSION} --build-arg PROTOBUFF_VERSION=${PROTOBUFF_VERSION} .
+	docker build -t ${TAG}:${PROTOBUFF_VERSION} \
+		--build-arg RUNTIME_IMG=${RUNTIME_IMG} \
+		--build-arg PROTOBUFF_VERSION=${PROTOBUFF_VERSION} .
 
 docker-push:
 	docker push ${TAG}:${PROTOBUFF_VERSION}

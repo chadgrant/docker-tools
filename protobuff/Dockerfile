@@ -1,5 +1,7 @@
-FROM golang:1.13.5-buster
-ARG PROTOBUFF_VERSION="3.6.1"
+ARG PROTOBUFF_VERSION
+ARG RUNTIME_IMG
+FROM $RUNTIME_IMG
+ARG PROTOBUFF_VERSION
 
 RUN	go get \
 	github.com/gogo/protobuf/proto \

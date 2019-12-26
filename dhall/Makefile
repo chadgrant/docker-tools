@@ -1,5 +1,7 @@
 DHALL_VERSION?=1.28.0
 DHALL_JSON_VERSION?=1.6.0
+BUILDER_IMG?=alpine:3.11.2
+RUNTIME_IMG?=alpine:3.11.2
 TAG?=chadgrant/dhall
 
 .PHONY: help
@@ -13,7 +15,9 @@ help: ## This help.
 docker-build:
 	docker build -t ${TAG}:${DHALL_VERSION} \
 	--build-arg DHALL_VERSION=${DHALL_VERSION} \
-	--build-arg DHALL_JSON_VERSION=${DHALL_JSON_VERSION} .
+	--build-arg DHALL_JSON_VERSION=${DHALL_JSON_VERSION} \
+	--build-arg BUILDER_IMG=${BUILDER_IMG} \
+	--build-arg RUNTIME_IMG=${RUNTIME_IMG} .
 
 docker-push:
 	docker push ${TAG}:${DHALL_VERSION}

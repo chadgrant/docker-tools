@@ -1,9 +1,11 @@
-ARG builder_img="alpine:3.10.3"
-ARG runtime_img="alpine:3.10.3"
+ARG BUILDER_IMG
+ARG RUNTIME_IMG
+ARG DHALL_VERSION
+ARG DHALL_JSON_VERSION
 
-FROM $builder_img AS builder
-ARG DHALL_VERSION="1.28.0"
-ARG DHALL_JSON_VERSION="1.6.0"
+FROM $BUILDER_IMG AS builder
+ARG DHALL_VERSION
+ARG DHALL_JSON_VERSION
 
 RUN apk add --update bzip2 tar curl && \
 	rm -rf /var/cache/apk/* && \
@@ -17,6 +19,6 @@ RUN apk add --update bzip2 tar curl && \
 	cp ./bin/*dhall* /usr/local/bin && \
 	rm -rf /tmp/dhall
 
-FROM $runtime_img
+FROM $RUNTIME_IMG
 COPY --from=builder /usr/local/bin/*dhall* /usr/local/bin/
 ENTRYPOINT ["dhall-to-json"]
