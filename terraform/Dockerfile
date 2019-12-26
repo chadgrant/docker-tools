@@ -22,16 +22,16 @@ RUN apk add --update git bash python py-pip groff less openssh nano mailcap jq a
     apk -v --purge del py-pip && \
     rm /var/cache/apk/* && \
     mkdir -p /go/bin /usr/local/go/bin && \
-	mkdir -p /tmp/dhall && cd /tmp/dhall && \
-	curl -sL https://github.com/dhall-lang/dhall-haskell/releases/download/${DHALL_VERSION}/dhall-${DHALL_VERSION}-x86_64-linux.tar.bz2 \
-	--output dhall.tar.bz2 && \
-	bzip2 -dc dhall.tar.bz2 | tar xf - && rm dhall.tar.bz2 && \
+    mkdir -p /tmp/dhall && cd /tmp/dhall && \
+    curl -sL https://github.com/dhall-lang/dhall-haskell/releases/download/${DHALL_VERSION}/dhall-${DHALL_VERSION}-x86_64-linux.tar.bz2 \
+    --output dhall.tar.bz2 && \
+    bzip2 -dc dhall.tar.bz2 | tar xf - && rm dhall.tar.bz2 && \
     curl -sL https://github.com/dhall-lang/dhall-haskell/releases/download/${DHALL_VERSION}/dhall-json-${DHALL_JSON_VERSION}-x86_64-linux.tar.bz2 \
     --output dhall-json.tar.bz2 && \
-	bzip2 -dc dhall-json.tar.bz2 | tar xf - && rm dhall-json.tar.bz2 && \
-	cp ./bin/*dhall* /usr/local/bin && \
+    bzip2 -dc dhall-json.tar.bz2 | tar xf - && rm dhall-json.tar.bz2 && \
+    cp ./bin/*dhall* /usr/local/bin && \
     cd - && \
-	rm -rf /tmp/dhall
+    rm -rf /tmp/dhall
 
 RUN git clone https://github.com/chadgrant/go.git $GOPATH/src/github.com/chadgrant/go && \
     cd $GOPATH/src/github.com/chadgrant/go/terraform/tfvars && \
