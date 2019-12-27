@@ -81,10 +81,10 @@ function docker-terraform() {
         return 1
     fi
 
-    STUDIO=$(cd .. && basename $PWD)
+    WORKSPACE=$(cd .. && basename $PWD)
 
     docker run -it --rm \
-        -v $(cd .. && pwd):/terraform/$STUDIO/ -w /terraform/$STUDIO/$(basename $PWD) \
+        -v $(cd .. && pwd):/terraform/$WORKSPACE/ -w /terraform/$WORKSPACE/$(basename $PWD) \
         -e STATE_STORE=AWS -e SECRET_STORE=AWS -e FILE_STORE=AWS \
         -e ENVIRONMENT=$AWS_PROFILE \
         -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
@@ -92,5 +92,5 @@ function docker-terraform() {
         -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION \
         -e AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN \
         -e PS1='🐳 \[\033[1;36m\]\w \[\033[1;91m\](${ENVIRONMENT})\[\033[0;35m\] \[\033[1;36m\]# \[\033[0m\]' \
-        playstudios/terraform
+        chadgrant/terraform
 }

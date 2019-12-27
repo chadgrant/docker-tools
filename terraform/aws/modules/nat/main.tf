@@ -21,8 +21,8 @@ resource "aws_nat_gateway" "nat" {
   subnet_id     = "${element(split(",",var.public_subnet_ids), count.index)}"
 
   tags {
-    "playstudios:environment" = "${var.environment}"
-    "playstudios:team" = "${var.team}"
+    "company:environment" = "${var.environment}"
+    "company:team" = "${var.team}"
   }
 }
 

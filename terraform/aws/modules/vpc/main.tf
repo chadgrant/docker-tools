@@ -12,8 +12,8 @@ resource "aws_vpc" "vpc" {
 
   tags {
     Name = "${var.name}"
-    "playstudios:environment" = "${var.environment}"
-    "playstudios:team" = "${var.team}"
+    "company:environment" = "${var.environment}"
+    "company:team" = "${var.team}"
   }
 }
 
@@ -22,8 +22,8 @@ resource "aws_vpc_dhcp_options" "dhcp" {
 
   tags {
     Name = "${var.environment}"
-    "playstudios:environment" = "${var.environment}"
-    "playstudios:team" = "${var.team}"
+    "company:environment" = "${var.environment}"
+    "company:team" = "${var.team}"
   }
 }
 

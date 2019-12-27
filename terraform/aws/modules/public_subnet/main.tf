@@ -15,9 +15,9 @@ resource "aws_subnet" "public" {
 
   tags {
     Name = "${var.name}-${element(split(",", var.azs), count.index)}"
-    "playstudios:tier" = "${var.tier}"
-    "playstudios:environment" = "${var.environment}"
-    "playstudios:team" = "${var.team}"
+    "company:tier" = "${var.tier}"
+    "company:environment" = "${var.environment}"
+    "company:team" = "${var.team}"
   }
 
   map_public_ip_on_launch = true
@@ -34,8 +34,8 @@ resource "aws_route_table" "public" {
 
   tags {
     Name = "${var.name}-${element(split(",", var.azs), count.index)}"
-    "playstudios:environment" = "${var.environment}"
-    "playstudios:team" = "${var.team}"
+    "company:environment" = "${var.environment}"
+    "company:team" = "${var.team}"
   }
 }
 

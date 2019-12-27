@@ -5,9 +5,9 @@ provider "aws" {
 
 locals {
   common_tags = "${map(
-    "playstudios:application","${var.application}",
-    "playstudios:environment","${var.environment}",
-    "playstudios:team","${var.team}"
+    "company:application","${var.application}",
+    "company:environment","${var.environment}",
+    "company:team","${var.team}"
   )}"
 }
 

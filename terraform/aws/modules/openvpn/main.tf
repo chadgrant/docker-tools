@@ -47,8 +47,8 @@ resource "aws_security_group" "openvpn" {
 
   tags {
     Name = "${var.name}"
-    "playstudios:environment" = "${var.environment}"
-    "playstudios:team" = "${var.team}"
+    "company:environment" = "${var.environment}"
+    "company:team" = "${var.team}"
   }
 
   ingress {
@@ -133,8 +133,8 @@ resource "aws_instance" "openvpn" {
 
   tags {
     Name = "${var.name}"
-    "playstudios:environment" = "${var.environment}"
-    "playstudios:team" = "${var.team}"
+    "company:environment" = "${var.environment}"
+    "company:team" = "${var.team}"
   }
 
   # `admin_user` and `admin_pw` need to be passed in to the appliance through `user_data`, see docs -->
