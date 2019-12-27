@@ -75,3 +75,13 @@ export FILE_STORE=AWS
 ```
 - get-file [remote] [local]
 - put-file [local] [remote]
+
+## Derived docker images setting default tags in terraform
+
+```docker
+ARG COMPANY_NAME="default"
+ENV COMPANY_NAME=${COMPANY_NAME}
+
+# setting company name tags in old terraform files where interpolation didn't work
+RUN find /terraform/modules *.tf -type f | xargs | xargs sed -i "s/company:/${COMPANY_NAME}:/g"
+```
