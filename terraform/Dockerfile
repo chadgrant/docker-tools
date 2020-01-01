@@ -1,19 +1,17 @@
 ARG TERRAFORM_VERSION
 ARG DHALL_VERSION
 ARG DHALL_JSON_VERSION
-ARG GO_VERSION
+ARG GO_IMG
 ARG BUILDER_IMG
 ARG RUNTIME_IMG
 
 FROM $BUILDER_IMG AS builder
 ARG DHALL_VERSION 
 ARG DHALL_JSON_VERSION
-ENV GOPATH="/go" PATH="/usr/local/go/bin:/go/bin:$PATH"
     
 RUN apk add --update git curl tar bzip2 && \
     rm /var/cache/apk/* && \
-    mkdir -p /go/bin /usr/local/go/bin && \
-    mkdir -p /tmp/dhall && cd /tmp/dhall && \
+    mkdir /tmp/dhall && cd /tmp/dhall && \
     curl -sL https://github.com/dhall-lang/dhall-haskell/releases/download/${DHALL_VERSION}/dhall-${DHALL_VERSION}-x86_64-linux.tar.bz2 \
     --output dhall.tar.bz2 && \
     bzip2 -dc dhall.tar.bz2 | tar xf - && rm dhall.tar.bz2 && \
@@ -24,12 +22,16 @@ RUN apk add --update git curl tar bzip2 && \
     cd - && \
     rm -rf /tmp/dhall
 
-RUN git clone https://github.com/chadgrant/go.git $GOPATH/src/github.com/chadgrant/go && \
-    cd $GOPATH/src/github.com/chadgrant/go/terraform/tfvars && \
-    go install
-
 FROM hashicorp/terraform:${TERRAFORM_VERSION} as terraform
-FROM golang:${GO_VERSION}-alpine as go
+FROM $GO_IMG as go
+
+COPY go/go.mod go/go.sum /go/src/github.com/chadgrant/docker-tools/go/
+RUN cd $GOPATH/src/github.com/chadgrant/docker-tools/go && \
+    go mod download
+
+COPY go /go/src/github.com/chadgrant/docker-tools/go
+RUN cd $GOPATH/src/github.com/chadgrant/docker-tools/go/tfvars && \
+    go install
 
 FROM $RUNTIME_IMG
 ENV GOPATH="/go" PATH="/usr/local/go/bin:/go/bin:$PATH"
@@ -41,8 +43,8 @@ RUN apk -v --update add python less openssh nano jq curl && \
     rm /var/cache/apk/*
 
 COPY --from=builder /usr/local/bin/*dhall* /usr/local/bin/
-COPY --from=builder /go/bin/* /usr/local/bin/
 COPY --from=go /usr/local/go/ /usr/local/go/
+COPY --from=go /go/bin/* /go/bin/
 COPY --from=terraform /bin/terraform /usr/local/bin/
 
 COPY aws/modules /terraform/modules/aws/
