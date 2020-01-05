@@ -1,9 +1,10 @@
+ARG REGISTRY=docker.io
 ARG BUILDER_IMG
 ARG RUNTIME_IMG
 ARG DHALL_VERSION
 ARG DHALL_JSON_VERSION
 
-FROM $BUILDER_IMG AS builder
+FROM $REGISTRY/$BUILDER_IMG AS builder
 ARG DHALL_VERSION
 ARG DHALL_JSON_VERSION
 
@@ -19,6 +20,16 @@ RUN apk add --update bzip2 tar curl && \
 	cp ./bin/*dhall* /usr/local/bin && \
 	rm -rf /tmp/dhall
 
-FROM $RUNTIME_IMG
+FROM $REGISTRY/$RUNTIME_IMG
 COPY --from=builder /usr/local/bin/*dhall* /usr/local/bin/
 ENTRYPOINT ["dhall-to-json"]
+
+ARG BASE_REPOSITORY=chadgrant/dhall
+LABEL \
+    org.label-schema.docker.cmd="docker run -it --rm ${REGISTRY}/${BASE_REPOSITORY}:${DHALL_VERSION}" \
+    org.label-schema.description="dhall tools available for local use" \
+    org.label-schema.name="${REGISTRY}/${BASE_REPOSITORY}:${DHALL_VERSION}" \
+    org.label-schema.schema-version="1.0" \
+    org.label-schema.url="https://github.com/chadgrant/docker-tools/dhall" \
+    org.label-schema.vendor="Chad Grant" \
+    org.label-schema.version="${DHALL_VERSION}"
