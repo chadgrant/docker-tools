@@ -16,6 +16,7 @@ docker-clean: $(addprefix docker-clean-,$(GO_IMGS))
 	-docker rmi `docker images -qf dangling=true`
 
 docker-build-%:
+	DOCKER_BUILDKIT=1 && \
 	docker build -t chadgrant/golang-testing:$* \
 	--build-arg GO_IMG=golang:$* .
 

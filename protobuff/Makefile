@@ -11,6 +11,7 @@ help: ## This help.
 .EXPORT_ALL_VARIABLES:
 
 docker-build:
+	DOCKER_BUILDKIT=1 && \
 	docker build -t ${TAG}:${PROTOBUFF_VERSION} \
 		--build-arg RUNTIME_IMG=${RUNTIME_IMG} \
 		--build-arg PROTOBUFF_VERSION=${PROTOBUFF_VERSION} .

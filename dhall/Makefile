@@ -13,6 +13,7 @@ help: ## This help.
 .EXPORT_ALL_VARIABLES:
 
 docker-build:
+	DOCKER_BUILDKIT=1 && \
 	docker build -t ${TAG}:${DHALL_VERSION} \
 	--build-arg DHALL_VERSION=${DHALL_VERSION} \
 	--build-arg DHALL_JSON_VERSION=${DHALL_JSON_VERSION} \
