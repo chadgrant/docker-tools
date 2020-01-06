@@ -14,5 +14,5 @@ RUN go get github.com/gojp/goreportcard \
 
 #COPY entrypoint.sh /entrypoint.sh
 
-ENTRYPOINT [ "go" ]
-CMD ["test","-v","./..."]
+#ENTRYPOINT [ "go" ]
+CMD ["go","test","-v","./..."]
