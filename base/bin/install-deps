@@ -1,0 +1,16 @@
+#!/bin/sh
+
+set -ex
+
+if type "apk" > /dev/null; then
+    apk add --update --no-cache --clean-protected "$@"
+fi
+
+if type "apt-get" > /dev/null; then
+    apt-get update 
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "$@"
+    apt-get clean
+    rm -rf /var/lib/apt/lists/*
+fi
+
+exit 0

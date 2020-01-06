@@ -9,8 +9,7 @@ FROM $BUILDER_IMG AS builder
 ARG DHALL_VERSION 
 ARG DHALL_JSON_VERSION
     
-RUN apk add --update git curl tar bzip2 && \
-    rm /var/cache/apk/* && \
+RUN install-deps git curl tar bzip2 && \
     mkdir /tmp/dhall && cd /tmp/dhall && \
     curl -sL https://github.com/dhall-lang/dhall-haskell/releases/download/${DHALL_VERSION}/dhall-${DHALL_VERSION}-x86_64-linux.tar.bz2 \
     --output dhall.tar.bz2 && \

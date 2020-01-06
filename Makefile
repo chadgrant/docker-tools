@@ -2,6 +2,6 @@ SUBDIRS := $(wildcard */.)
 
 all: $(SUBDIRS)
 $(SUBDIRS):
-	$(MAKE) -C $@ docker-build
+	$(MAKE) -C $@ docker-push
 
 .PHONY: all $(SUBDIRS)

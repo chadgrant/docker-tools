@@ -1,15 +1,13 @@
-ARG REGISTRY=docker.io
 ARG BUILDER_IMG
 ARG RUNTIME_IMG
 ARG DHALL_VERSION
 ARG DHALL_JSON_VERSION
 
-FROM $REGISTRY/$BUILDER_IMG AS builder
+FROM $BUILDER_IMG AS builder
 ARG DHALL_VERSION
 ARG DHALL_JSON_VERSION
 
-RUN apk add --update bzip2 tar curl && \
-	rm -rf /var/cache/apk/* && \
+RUN apk add --update --no-cache --clean-protected bzip2 tar curl && \
 	mkdir -p /tmp/dhall && cd /tmp/dhall && \
 	curl -sL https://github.com/dhall-lang/dhall-haskell/releases/download/${DHALL_VERSION}/dhall-${DHALL_VERSION}-x86_64-linux.tar.bz2 \
 	--output dhall.tar.bz2 && \
@@ -20,16 +18,6 @@ RUN apk add --update bzip2 tar curl && \
 	cp ./bin/*dhall* /usr/local/bin && \
 	rm -rf /tmp/dhall
 
-FROM $REGISTRY/$RUNTIME_IMG
+FROM $RUNTIME_IMG
 COPY --from=builder /usr/local/bin/*dhall* /usr/local/bin/
 ENTRYPOINT ["dhall-to-json"]
-
-ARG BASE_REPOSITORY=chadgrant/dhall
-LABEL \
-    org.label-schema.docker.cmd="docker run -it --rm ${REGISTRY}/${BASE_REPOSITORY}:${DHALL_VERSION}" \
-    org.label-schema.description="dhall tools available for local use" \
-    org.label-schema.name="${REGISTRY}/${BASE_REPOSITORY}:${DHALL_VERSION}" \
-    org.label-schema.schema-version="1.0" \
-    org.label-schema.url="https://github.com/chadgrant/docker-tools/dhall" \
-    org.label-schema.vendor="Chad Grant" \
-    org.label-schema.version="${DHALL_VERSION}"

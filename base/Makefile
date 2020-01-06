@@ -1,5 +1,4 @@
-ALPINE_VERSIONS=3.11.2
-
+BASE_IMGS=alpine[3.11.2] alpine[3.10.3] debian[bullseye-slim] debian[buster-slim] golang[1.13.5-alpine] golang[1.13.5-buster]
 APPLICATION?=base
 FRIENDLY?=Docker Base Image
 DESCRIPTION?=This is the description of the base image, enjoy!
@@ -9,12 +8,12 @@ BUILD_GROUP?=sample-group
 BUILD_BRANCH?=$(shell git rev-parse --abbrev-ref HEAD)
 BUILD_HASH?=$(shell git rev-parse HEAD)
 BUILD_DATE?=$(shell date -u +%s)
-REPO_URL="https://github.com/chadgrant/docker-tools/base"
-REGISTRY=docker.io
-BASE_REPOSITORY=chadgrant/base
+REPO_URL?=https://github.com/chadgrant/docker-tools/base
+REGISTRY?=docker.io
+BASE_REPOSITORY?=chadgrant/base
 BUILD_USER?=$(USER)
 ifdef BUILD_HASH
-	BUILD_USER=$(shell git --no-pager show -s --format='%ae' $(BUILD_HASH))
+	BUILD_USER?=$(shell git --no-pager show -s --format='%ae' $(BUILD_HASH))
 endif
 
 ## http://label-schema.org/rc1/
@@ -43,19 +42,20 @@ help: ## This help.
 .DEFAULT_GOAL := help
 .EXPORT_ALL_VARIABLES:
 
-docker-build: $(addprefix docker-build-alpine-,$(ALPINE_VERSIONS))
-docker-push: $(addprefix docker-push-alpine-,$(ALPINE_VERSIONS))
-docker-stop: $(addprefix docker-stop-alpine-,$(ALPINE_VERSIONS))
-docker-rm: $(addprefix docker-rm-alpine-,$(ALPINE_VERSIONS))
-docker-clean: $(addprefix docker-clean-alpine-,$(ALPINE_VERSIONS))
+docker-build: $(addprefix docker-build-,$(BASE_IMGS))
+docker-push: $(addprefix docker-push-,$(BASE_IMGS))
+docker-stop: $(addprefix docker-stop-,$(BASE_IMGS))
+docker-rm: $(addprefix docker-rm-,$(BASE_IMGS))
+
+docker-clean: $(addprefix docker-clean-,$(BASE_IMGS))
 	-docker system prune -f --volumes
 
-docker-build-alpine-%:
-	DOCKER_BUILDKIT=1 && \
-	docker build ${common_args} --build-arg IMG="alpine:$*" -t chadgrant/base:$*-alpine .
+docker-build-%:
+	docker build ${common_args} --build-arg IMG="$(subst ],,$(subst [,:,$*))" \
+		-t ${REGISTRY}/chadgrant/base:$(subst ],,$(subst [,-,$*)) .
 
-docker-push-alpine-%: docker-build-alpine-%
-	docker push chadgrant/base:$*-alpine
+docker-push-%: docker-build-%
+	docker push ${REGISTRY}/chadgrant/base:$(subst ],,$(subst [,-,$*))
 
 docker-stop-%:
 	-docker container stop `docker container ls -q --filter ancestor=$*`
