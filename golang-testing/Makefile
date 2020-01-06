@@ -25,7 +25,7 @@ common_args += --label org.label-schema.description="${DESCRIPTION}"
 common_args += --label org.label-schema.application-name="${APPLICATION}"
 common_args += --label org.label-schema.build-group="${BUILD_GROUP}"
 common_args += --label org.label-schema.build-user="${BUILD_USER}"
-common_args += --label org.label-schema.build-date=${BUILD_DATE}
+common_args += --label org.label-schema.build-date="${BUILD_DATE}"
 common_args += --label org.label-schema.vcs-branch="${BUILD_BRANCH}"
 common_args += --label org.label-schema.vcs-ref="${BUILD_HASH}"
 common_args += --label org.label-schema.vcs-url="${REPO_URL}"
