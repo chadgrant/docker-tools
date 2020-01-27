@@ -42,19 +42,20 @@ help: ## This help.
 .DEFAULT_GOAL := help
 .EXPORT_ALL_VARIABLES:
 
-docker-build: $(addprefix docker-build-,$(BASE_IMGS))
-docker-push: $(addprefix docker-push-,$(BASE_IMGS))
+build: $(addprefix build-,$(BASE_IMGS))
+push: $(addprefix push-,$(BASE_IMGS))
+
 docker-stop: $(addprefix docker-stop-,$(BASE_IMGS))
 docker-rm: $(addprefix docker-rm-,$(BASE_IMGS))
 
 docker-clean: $(addprefix docker-clean-,$(BASE_IMGS))
 	-docker system prune -f --volumes
 
-docker-build-%:
+build-%:
 	docker build ${common_args} --build-arg IMG="$(subst ],,$(subst [,:,$*))" \
 		-t ${REGISTRY}/chadgrant/base:$(subst ],,$(subst [,-,$*)) .
 
-docker-push-%: docker-build-%
+push-%: build-%
 	docker push ${REGISTRY}/chadgrant/base:$(subst ],,$(subst [,-,$*))
 
 docker-stop-%:

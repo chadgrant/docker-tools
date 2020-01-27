@@ -40,16 +40,16 @@ help: ## This help.
 .DEFAULT_GOAL := help
 .EXPORT_ALL_VARIABLES:
 
-docker-build: $(addprefix docker-build-,$(GO_IMGS))
-docker-push: $(addprefix docker-push-,$(GO_IMGS))
+build: $(addprefix build-,$(GO_IMGS)) ## builds all docker images
+push: $(addprefix push-,$(GO_IMGS))  ## pushes all docker images
 
-docker-build-%:
-	docker build ${common_args} --build-arg GO_IMG="${REGISTRY}/chadgrant/base:$*" \
+build-%:
+	@docker build ${common_args} --build-arg GO_IMG="${REGISTRY}/chadgrant/base:$*" \
 		-t ${REGISTRY}/${TAG}:$(subst golang-,,$*) .
 
-docker-push-%: docker-build-%
+push-%: build-%
 	docker push ${REGISTRY}/${TAG}:$(subst golang-,,$*) 
 
-docker-clean:
+clean: ## deletes / removes docker images locally
 	-docker rmi `docker images --format '{{.Repository}}:{{.Tag}}' | grep "${TAG}"` -f
 	-docker rmi `docker images -qf dangling=true`

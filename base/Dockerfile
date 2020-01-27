@@ -19,7 +19,7 @@ RUN curl -sSL "https://github.com/tianon/gosu/releases/download/${GOSU_VER}/gosu
     && chmod 755 /usr/bin/gosu \
     && gosu nobody true
 
-HEALTHCHECK CMD /usr/bin/healthcheck.sh
+#HEALTHCHECK CMD /usr/bin/healthcheck.sh
 
 ENTRYPOINT ["/usr/bin/entrypoint.sh"]
 CMD ["/bin/sh"]
