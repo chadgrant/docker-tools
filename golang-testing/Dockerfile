@@ -15,10 +15,8 @@ RUN go get github.com/gojp/goreportcard \
     curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh \
         | sh -s -- -b $(shell go env GOPATH)/bin v1.22.2
 
-RUN npm install -g mocha chai expect supertest
-
-
-#COPY entrypoint.sh /entrypoint.sh
+RUN npm install -g npm@latest && \
+    npm install -g mocha chai expect supertest ajv
 
 #ENTRYPOINT [ "go" ]
 CMD ["go","test","-v","./..."]
