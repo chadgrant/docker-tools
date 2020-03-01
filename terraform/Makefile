@@ -2,7 +2,7 @@ APPLICATION?=terraform
 FRIENDLY?=Image containing terraform and tools & utilites
 DESCRIPTION?=Image containing terraform and tools & utilites
 VENDOR?=Chad Grant
-BUILD_NUMBER?=1.0.0
+BUILD_NUMBER?=1.0.1
 BUILD_GROUP?=sample-group
 BUILD_BRANCH?=$(shell git rev-parse --abbrev-ref HEAD)
 BUILD_HASH?=$(shell git rev-parse HEAD)
@@ -17,7 +17,7 @@ endif
 TERRAFORM_VERSION?=0.12.18
 DHALL_VERSION?=1.28.0
 DHALL_JSON_VERSION?=1.6.0
-GO_IMG?=golang:1.13.5-alpine #arch must match GO_IMG arch, go is copied over from image
+GO_IMG?=golang:1.14-alpine #arch must match GO_IMG arch, go is copied over from image
 BUILDER_IMG?=${REGISTRY}/chadgrant/base:alpine-3.11.2
 RUNTIME_IMG?=${REGISTRY}/chadgrant/base:alpine-3.11.2
 TAG?=chadgrant/terraform
@@ -45,7 +45,7 @@ help: ## This help.
 .DEFAULT_GOAL := help
 .EXPORT_ALL_VARIABLES:
 
-docker-build:
+build:
 	docker build ${common_args} -t ${REGISTRY}/${TAG}:${TERRAFORM_VERSION} \
 	--build-arg DHALL_VERSION=${DHALL_VERSION} \
 	--build-arg DHALL_JSON_VERSION=${DHALL_JSON_VERSION} \
@@ -54,20 +54,20 @@ docker-build:
 	--build-arg BUILDER_IMG=${BUILDER_IMG} \
 	--build-arg RUNTIME_IMG=${RUNTIME_IMG} .
 
-docker-push: docker-build
+push: build
 	docker push ${REGISTRY}/${TAG}:${TERRAFORM_VERSION}
 
-docker-run:
+run:
 	docker run -it \
 		-v $(shell pwd)/terraform/:/terraform \
 		${REGISTRY}/${TAG}:${TERRAFORM_VERSION}
 
-docker-stop:
+stop:
 	-docker container stop `docker container ls -q --filter ancestor=${REGISTRY}/${TAG}`
 
-docker-rm: docker-stop
+rm: stop
 	-docker container rm `docker container ls -aq --filter ancestor=${REGISTRY}/${TAG}`
 
-docker-clean: docker-rm
+clean: rm
 	-docker rmi `docker images --format '{{.Repository}}:{{.Tag}}' | grep "${TAG}"` -f
 	-docker system prune -f --volumes

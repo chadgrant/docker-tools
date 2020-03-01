@@ -16,7 +16,7 @@ ifdef BUILD_HASH
 endif
 
 PROTOBUFF_VERSION?=3.6.1
-RUNTIME_IMG?=${REGISTRY}/chadgrant/base:golang-1.13.5-buster
+RUNTIME_IMG?=${REGISTRY}/chadgrant/base:golang-1.14-buster
 TAG?=chadgrant/protobuff
 
 ## http://label-schema.org/rc1/
@@ -42,25 +42,25 @@ help: ## This help.
 .DEFAULT_GOAL := help
 .EXPORT_ALL_VARIABLES:
 
-docker-build:
+build:
 	docker build ${common_args} -t ${REGISTRY}/${TAG}:${PROTOBUFF_VERSION} \
 		--build-arg RUNTIME_IMG=${RUNTIME_IMG} \
 		--build-arg PROTOBUFF_VERSION=${PROTOBUFF_VERSION} .
 
-docker-push: docker-build
+push: build
 	docker push ${REGISTRY}/${TAG}:${PROTOBUFF_VERSION}
 
-docker-run:
+run:
 	docker run -it \
 		-v $(shell pwd)/proto/:/proto \
 		${TAG}:${PROTOBUFF_VERSION}
 
-docker-stop:
+stop:
 	-docker container stop `docker container ls -q --filter ancestor=${REGISTRY}/${TAG}`
 
-docker-rm: docker-stop
+rm: stop
 	-docker container rm `docker container ls -aq --filter ancestor=${REGISTRY}/${TAG}`
 
-docker-clean: docker-rm
+clean: docker-rm
 	-docker rmi `docker images --format '{{.Repository}}:{{.Tag}}' | grep "${TAG}"` -f
 	-docker system prune -f --volumes

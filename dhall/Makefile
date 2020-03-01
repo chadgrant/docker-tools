@@ -43,28 +43,28 @@ help: ## This help.
 .DEFAULT_GOAL := help
 .EXPORT_ALL_VARIABLES:
 
-docker-build:
+build:
 	docker build ${common_args} -t ${REGISTRY}/${TAG}:${DHALL_VERSION} \
 	--build-arg DHALL_VERSION=${DHALL_VERSION} \
 	--build-arg DHALL_JSON_VERSION=${DHALL_JSON_VERSION} \
 	--build-arg BUILDER_IMG=${BUILDER_IMG} \
 	--build-arg RUNTIME_IMG=${RUNTIME_IMG} .
 
-docker-push: docker-build
+push: build
 	docker push ${REGISTRY}/${TAG}:${DHALL_VERSION}
 
-docker-run:
+run:
 	docker run --rm -it \
 		--workdir /work \
 		-v $(shell pwd):/work \
 		${REGISTRY}/${TAG}:${DHALL_VERSION} --help
 
-docker-stop:
+stop:
 	-docker container stop `docker container ls -q --filter ancestor=${REGISTRY}/${TAG}`
 
-docker-rm: docker-stop
+rm: stop
 	-docker container rm `docker container ls -aq --filter ancestor=${REGISTRY}/${TAG}`
 
-docker-clean: docker-rm
+clean: docker-rm
 	-docker rmi `docker images --format '{{.Repository}}:{{.Tag}}' | grep "${TAG}"` -f
 	-docker system prune -f --volumes

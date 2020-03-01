@@ -14,7 +14,7 @@ ifdef BUILD_HASH
 	BUILD_USER?=$(shell git --no-pager show -s --format='%ae' $(BUILD_HASH))
 endif
 
-GO_IMGS=golang-1.13.5-alpine golang-1.13.5-buster
+GO_IMGS=golang-1.13.5-alpine golang-1.13.5-buster golang-1.14-alpine golang-1.14-buster
 TAG?=chadgrant/golang-testing
 
 ## http://label-schema.org/rc1/
