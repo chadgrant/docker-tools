@@ -1,4 +1,4 @@
-BASE_IMGS=alpine[3.11.2] alpine[3.10.3] debian[bullseye-slim] debian[buster-slim] golang[1.13.5-alpine] golang[1.13.5-buster] golang[1.14-buster] golang[1.14-alpine]
+BASE_IMGS=alpine[3.13.2] alpine[3.11.2] debian[bullseye-slim] debian[buster-slim] golang[1.16.0-buster] golang[1.16.0-alpine]
 APPLICATION?=base
 FRIENDLY?=Docker Base Image
 DESCRIPTION?=This is the description of the base image, enjoy!
